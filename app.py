@@ -1,24 +1,15 @@
-pip install langchain
-
 import streamlit as st
 from sentence_transformers import SentenceTransformer
 import faiss
 import numpy as np
 import streamlit as st
 import time
-from langchain.chains import RetrievalQA
-from langchain.vectorstores import FAISS
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.llms import OpenAI
 import os
-import openai
-import streamlit as st
 import openai
 import streamlit as st
 
 # Load FAISS index
 embedding = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-faiss_index = FAISS.load_local("cleanser_faiss_index", embeddings=embedding)
 
 # --- SHOPIFY FLOW SIMULATION ---
 
@@ -44,9 +35,6 @@ if st.session_state.visit_count > 1 or elapsed_time > 30:
     st.success("👋 Need help choosing a cleanser? I’m here to assist!")
 
     user_query = st.text_input("Tell me your skin type or skin concern:")
-    if user_query:
-        response = qa.run(user_query)  # Call your AI assistant
-        st.write("🔍 " + response)  # Show the actual AI-generated response
 
 # Cleanser descriptions
 descriptions = [
