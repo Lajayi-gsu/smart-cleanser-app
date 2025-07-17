@@ -39,34 +39,34 @@ skin_concerns = st.multiselect(
 if st.button("Find a Cleanser"):
     with st.spinner("Searching for best match..."):
         time.sleep(2)
-        st.subheader("\ud83d\udd0d Recommended Cleanser")
-        st.image("https://images.unsplash.com/photo-1600180758890-6b94519f735d", width=200)
-        st.markdown("**Name:** Gentle Hydration Cleanser")
-        st.markdown("**Price:** $18.99")
-        st.markdown("**Skin Match:** Great for " + skin_type + " skin with concerns: " + ", ".join(skin_concerns))
-        st.markdown("**Top Review:** \"Left my skin feeling clean but not dry!\"")
+st.subheader("Recommended Cleanser")
+st.image("https://images.unsplash.com/photo-1600180758890-6b94519f735d", width=200)
+st.markdown("**Name:** Gentle Hydration Cleanser")
+st.markdown("**Price:** $18.99")
+st.markdown("**Skin Match:** Great for " + skin_type + " skin with concerns: " + ", ".join(skin_concerns))
+st.markdown("**Top Review:** \"Left my skin feeling clean but not dry!\"")
 
-        # Feedback prompt
-        st.markdown("---")
-        st.subheader("\ud83d\udcca Was this recommendation helpful?")
-        col1, col2 = st.columns([1, 4])
-        with col1:
-            helpful = st.radio("", ["👍 Yes", "👎 No"])
-        with col2:
-            comment = st.text_input("Any suggestions or feedback?")
+# Feedback prompt
+st.markdown("---")
+st.subheader("Was this recommendation helpful?")
+col1, col2 = st.columns([1, 4])
+with col1:
+helpful = st.radio("", ["👍 Yes", "👎 No"])
+with col2:
+comment = st.text_input("Any suggestions or feedback?")
 
-        # Log the feedback (local simulation, normally you'd write this to a DB or file)
-        if helpful or comment:
-            feedback = {
-                "datetime": str(datetime.now()),
-                "visit_count": st.session_state.visit_count,
-                "time_on_page": elapsed_time,
-                "skin_type": skin_type,
-                "concerns": skin_concerns,
-                "was_helpful": helpful,
-                "comment": comment
-            }
-            st.json(feedback)
+# Log the feedback (local simulation, normally you'd write this to a DB or file)
+if helpful or comment:
+feedback = {
+"datetime": str(datetime.now()),
+"visit_count": st.session_state.visit_count,
+"time_on_page": elapsed_time,
+"skin_type": skin_type,
+"concerns": skin_concerns,
+"was_helpful": helpful,
+"comment": comment
+}
+st.json(feedback)
 # Assistant trigger logic
 if st.session_state.visit_count > 2 or elapsed_time > 30:
     st.success("Need help choosing a cleanser? I’m here to assist!")
