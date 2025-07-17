@@ -1,67 +1,86 @@
+
+import streamlit as st
+from sentence_transformers import SentenceTransformer
+import faiss
+import numpy as np
 import streamlit as st
 import time
-from datetime import datetime
+from langchain.chains import RetrievalQA
+from langchain.vectorstores import FAISS
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.llms import OpenAI
+import os
+import openai
+import streamlit as st
+import openai
+import streamlit as st
 
-# Set page configuration
-st.set_page_config(page_title="Cleanser Product Page", page_icon="🧼")
-st.title("Cleanser Product Page")
+# Load FAISS index
+embedding = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+faiss_index = FAISS.load_local("cleanser_faiss_index", embeddings=embedding)
 
-# Track visit count and time on page
-if "visit_count" not in st.session_state:
+# --- SHOPIFY FLOW SIMULATION ---
+
+# Track visit count
+if 'visit_count' not in st.session_state:
     st.session_state.visit_count = 1
 else:
     st.session_state.visit_count += 1
 
-if "start_time" not in st.session_state:
+# Track time spent on page
+if 'start_time' not in st.session_state:
     st.session_state.start_time = time.time()
 
-elapsed_time = int(time.time() - st.session_state.start_time)
+elapsed_time = time.time() - st.session_state.start_time
 
-# Show visit count and elapsed time
-st.write(f"**Visit count:** {st.session_state.visit_count}")
-st.write(f"**Time on page:** {elapsed_time} seconds")
+# Display tracking info
+st.title("🧴 Cleanser Product Page")
+st.write(f"Visit count: {st.session_state.visit_count}")
+st.write(f"Time on page: {int(elapsed_time)} seconds")
 
-# Trigger assistant help message
-if st.session_state.visit_count > 2 or elapsed_time > 30:
-    st.success("Need help choosing a cleanser? I’m here to assist!")
+# --- TRIGGER ASSISTANT ---
+if st.session_state.visit_count > 1 or elapsed_time > 30:
+    st.success("👋 Need help choosing a cleanser? I’m here to assist!")
 
-# Collect user input
-skin_type = st.selectbox("What’s your skin type?", ["Dry", "Oily", "Combination", "Normal"])
-skin_concerns = st.multiselect(
-    "What’s your concern?", ["Acne", "Sensitivity", "Redness", "Wrinkles", "Dark Spots", "Open Pores"]
-)
+    user_query = st.text_input("Tell me your skin type or skin concern:")
+    if user_query:
+        response = qa.run(user_query)  # Call your AI assistant
+        st.write("🔍 " + response)  # Show the actual AI-generated response
 
-# Recommendation button
-if st.button("Find a Cleanser"):
-    with st.spinner("Searching for best match..."):
-        time.sleep(2)
-    st.subheader("Recommended Cleanser")
-    st.image("https://images.unsplash.com/photo-1600180758890-6b94519f735d", width=200)
-    st.markdown("**Name:** Gentle Hydration Cleanser")
-    st.markdown("**Price:** $18.99")
-    st.markdown(f"**Skin Match:** Great for {skin_type} skin with concerns: {', '.join(skin_concerns)}")
-   st.markdown("**Top Review:** 'Left my skin feeling clean but not dry!'")
+# Cleanser descriptions
+descriptions = [
+    "CeraVe Hydrating Facial Cleanser: Great for dry, eczema-prone skin. Fragrance-free and non-foaming.",
+    "Neutrogena Oil-Free Acne Wash: Effective for breakouts. Contains salicylic acid. May dry sensitive skin.",
+    "La Roche-Posay Toleriane Cleanser: Gentle on redness, good for sensitive combo skin.",
+    "Vanicream Gentle Cleanser: No fragrance or sulfates. Ideal for allergy-prone users.",
+    "COSRX Low pH Gel Cleanser: Tea tree and BHA for oily or acne-prone skin. pH balanced."
+]
 
-    # Feedback section
-    st.markdown("---")
-    st.subheader("Was this recommendation helpful?")
-    col1, col2 = st.columns([1, 4])
+# Embed with sentence-transformers
+embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+vectors = embedding_model.encode(descriptions)
+dimension = vectors.shape[1]
+index = faiss.IndexFlatL2(dimension)
+index.add(np.array(vectors))
+metadata = {i: descriptions[i] for i in range(len(descriptions))}
 
-    with col1:
-        helpful = st.radio("", ["Yes", "No"])
+# Search function
+def get_recommendation(query, top_k=3):
+    query_vec = embedding_model.encode([query])
+    D, I = index.search(np.array(query_vec), k=top_k)
+    return [metadata[i] for i in I[0]]
 
-    with col2:
-        comment = st.text_input("Any suggestions or feedback?")
+# Streamlit UI
+st.title("🧴 Smart Cleanser Finder")
 
-    if helpful or comment:
-        feedback = {
-            "datetime": str(datetime.now()),
-            "visit_count": st.session_state.visit_count,
-            "time_on_page": elapsed_time,
-            "skin_type": skin_type,
-            "concerns": skin_concerns,
-            "was_helpful": helpful,
-            "comment": comment
-        }
-        st.json(feedback)
-        st.success("Thank you for your feedback!")
+skin_type = st.selectbox("What is your skin type?", ["Dry", "Oily", "Combination", "Sensitive"])
+concern = st.selectbox("What is your main concern?", ["Acne", "Redness", "Dryness", "Fragrance sensitivity"])
+budget = st.slider("What is your budget range?", 5, 30, 15)
+
+query = f"I have {skin_type.lower()} skin and my concern is {concern.lower()}. I need a cleanser under ${budget}."
+
+if st.button("Get Recommendations"):
+    st.write("🔍 Searching for best matches...")
+    recs = get_recommendation(query)
+    for r in recs:
+        st.success(r)
