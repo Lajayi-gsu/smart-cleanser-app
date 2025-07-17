@@ -12,7 +12,8 @@ from langchain.llms import OpenAI
 import os
 import openai
 import streamlit as st
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+import openai
+import streamlit as st
 
 # Load FAISS index
 embedding = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
