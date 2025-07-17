@@ -10,7 +10,7 @@ from datetime import datetime
 
 # App Config
 st.set_page_config(page_title="Cleanser Product Page", page_icon="🛁")
-st.title("\ud83d\udec1 Cleanser Product Page")
+st.title("Cleanser Product Page")
 
 # Session state tracking
 if "start_time" not in st.session_state:
