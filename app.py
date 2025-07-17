@@ -51,9 +51,10 @@ st.markdown("---")
 st.subheader("Was this recommendation helpful?")
 col1, col2 = st.columns([1, 4])
 with col1:
-helpful = st.radio("", ["👍 Yes", "👎 No"])
+    helpful = st.radio("", ["Yes", "No"])
 with col2:
-comment = st.text_input("Any suggestions or feedback?")
+    comment = st.text_input("Any suggestions or feedback?")
+
 
 # Log the feedback (local simulation, normally you'd write this to a DB or file)
 if helpful or comment:
