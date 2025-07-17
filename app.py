@@ -1,5 +1,6 @@
 import streamlit as st
 from sentence_transformers import SentenceTransformer
+import torch
 import faiss
 import numpy as np
 import streamlit as st
@@ -43,7 +44,7 @@ descriptions = [
 ]
 
 # Embed with sentence-transformers
-embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+embedding_model = SentenceTransformer('all-MiniLM-L6-v2', device='cpu')
 vectors = embedding_model.encode(descriptions)
 dimension = vectors.shape[1]
 index = faiss.IndexFlatL2(dimension)
