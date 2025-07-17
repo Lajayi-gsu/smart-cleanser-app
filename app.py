@@ -5,6 +5,25 @@ import faiss
 import numpy as np
 import streamlit as st
 import time
+from langchain.chains import RetrievalQA
+from langchain.vectorstores import FAISS
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.llms import OpenAI
+import os
+import openai
+import streamlit as st
+openai.api_key = st.secrets["OPENAI_API_KEY"]
+
+# Load FAISS index
+embedding = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+faiss_index = FAISS.load_local("cleanser_faiss_index", embeddings=embedding)
+
+# Create RetrievalQA chain
+qa = RetrievalQA.from_chain_type(
+    llm=OpenAI(temperature=0),
+    chain_type="stuff",
+    retriever=faiss_index.as_retriever()
+)
 
 # --- SHOPIFY FLOW SIMULATION ---
 
