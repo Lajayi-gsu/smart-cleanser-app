@@ -27,7 +27,7 @@ st.write(f"**Time on page:** {elapsed_time} seconds")
 
 # Assistant trigger logic
 if st.session_state.visit_count > 2 or elapsed_time > 30:
-    st.success("\ud83d\udc4b Need help choosing a cleanser? I’m here to assist!")
+    st.success("👉 Need help choosing a cleanser? I’m here to assist!")
 
 # UI Inputs
 skin_type = st.selectbox("What’s your skin type?", ["Dry", "Oily", "Combination", "Normal"])
@@ -67,4 +67,5 @@ if st.button("Find a Cleanser"):
                 "comment": comment
             }
             st.json(feedback)
-            st.success("\ud83d\ude4c Thank you for your feedback!")
+          st.success("👉 Need help choosing a cleanser? I’m here to assist!")
+
