@@ -67,6 +67,9 @@ if st.button("Find a Cleanser"):
                 "comment": comment
             }
             st.json(feedback)
-          st.success("Need help choosing a cleanser? I’m here to assist!")
+# Assistant trigger logic
+if st.session_state.visit_count > 2 or elapsed_time > 30:
+    st.success("Need help choosing a cleanser? I’m here to assist!")
+
 
 
