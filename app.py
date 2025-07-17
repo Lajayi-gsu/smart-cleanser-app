@@ -3,6 +3,38 @@ import streamlit as st
 from sentence_transformers import SentenceTransformer
 import faiss
 import numpy as np
+import streamlit as st
+import time
+
+# --- SHOPIFY FLOW SIMULATION ---
+
+# Track visit count
+if 'visit_count' not in st.session_state:
+    st.session_state.visit_count = 1
+else:
+    st.session_state.visit_count += 1
+
+# Track time spent on page
+if 'start_time' not in st.session_state:
+    st.session_state.start_time = time.time()
+
+elapsed_time = time.time() - st.session_state.start_time
+
+# Display tracking info
+st.title("🧴 Cleanser Product Page")
+st.write(f"Visit count: {st.session_state.visit_count}")
+st.write(f"Time on page: {int(elapsed_time)} seconds")
+
+# --- TRIGGER ASSISTANT ---
+if st.session_state.visit_count > 1 or elapsed_time > 30:
+    st.success("👋 Need help choosing a cleanser? I’m here to assist!")
+
+    user_query = st.text_input("Tell me your skin type or skin concern:")
+    if user_query:
+        st.write("🔍 (This is where your AI answer will appear)")
+        # response = qa.run(user_query)  # Uncomment if using LangChain
+        # st.write(response)
+
 
 # Cleanser descriptions
 descriptions = [
