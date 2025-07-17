@@ -40,7 +40,7 @@ if st.button("Find a Cleanser"):
     st.markdown("**Name:** Gentle Hydration Cleanser")
     st.markdown("**Price:** $18.99")
     st.markdown(f"**Skin Match:** Great for {skin_type} skin with concerns: {', '.join(skin_concerns)}")
-    st.markdown("**Top Review:** "Left my skin feeling clean but not dry!"")
+   st.markdown("**Top Review:** 'Left my skin feeling clean but not dry!'")
 
     # Feedback section
     st.markdown("---")
