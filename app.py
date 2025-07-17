@@ -8,9 +8,6 @@ import os
 import openai
 import streamlit as st
 
-# Load FAISS index
-embedding = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-
 # --- SHOPIFY FLOW SIMULATION ---
 
 # Track visit count
