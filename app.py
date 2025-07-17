@@ -31,10 +31,8 @@ if st.session_state.visit_count > 1 or elapsed_time > 30:
 
     user_query = st.text_input("Tell me your skin type or skin concern:")
     if user_query:
-        st.write("🔍 (This is where your AI answer will appear)")
-        # response = qa.run(user_query)  # Uncomment if using LangChain
-        # st.write(response)
-
+        response = qa.run(user_query)  # Call your AI assistant
+        st.write("🔍 " + response)  # Show the actual AI-generated response
 
 # Cleanser descriptions
 descriptions = [
