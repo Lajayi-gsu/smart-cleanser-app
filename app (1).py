@@ -1,40 +1,67 @@
 import streamlit as st
 import time
+from datetime import datetime
 
-# Optional: Uncomment when using LangChain
-# from langchain.chains import RetrievalQA
-# from langchain.vectorstores import FAISS
-# from langchain.embeddings import OpenAIEmbeddings
-# from langchain.chat_models import ChatOpenAI
-# from langchain.document_loaders import TextLoader
-# from langchain.text_splitter import CharacterTextSplitter
+# Set page configuration
+st.set_page_config(page_title="Cleanser Product Page", page_icon="🧼")
+st.title("Cleanser Product Page")
 
-st.set_page_config(page_title="Cleanser Product Page")
-
-st.markdown("## 🧴 Cleanser Product Page")
-
-# Visit Counter
+# Track visit count and time on page
 if "visit_count" not in st.session_state:
     st.session_state.visit_count = 1
 else:
     st.session_state.visit_count += 1
 
-# Timer
 if "start_time" not in st.session_state:
     st.session_state.start_time = time.time()
-time_on_page = int(time.time() - st.session_state.start_time)
 
-st.markdown(f"**Visit count:** {st.session_state.visit_count}")
-st.markdown(f"**Time on page:** {time_on_page} seconds")
+elapsed_time = int(time.time() - st.session_state.start_time)
 
-# Trigger Message if user meets behavior threshold
-if st.session_state.visit_count >= 3 or time_on_page > 30:
-    st.success("👋 Need help choosing a cleanser? I’m here to assist!")
+# Show visit count and elapsed time
+st.write(f"**Visit count:** {st.session_state.visit_count}")
+st.write(f"**Time on page:** {elapsed_time} seconds")
 
-# Simulate Query Input
-user_query = st.text_input("Tell me your skin type or skin concern:")
+# Trigger assistant help message
+if st.session_state.visit_count > 2 or elapsed_time > 30:
+    st.success("Need help choosing a cleanser? I’m here to assist!")
 
-if user_query:
-    st.write("🔍 *(This is where your AI answer will appear)*")
-    # response = qa.run(user_query)  # Uncomment if using LangChain
-    # st.write(response)
+# Collect user input
+skin_type = st.selectbox("What’s your skin type?", ["Dry", "Oily", "Combination", "Normal"])
+skin_concerns = st.multiselect(
+    "What’s your concern?", ["Acne", "Sensitivity", "Redness", "Wrinkles", "Dark Spots", "Open Pores"]
+)
+
+# Recommendation button
+if st.button("Find a Cleanser"):
+    with st.spinner("Searching for best match..."):
+        time.sleep(2)
+    st.subheader("Recommended Cleanser")
+    st.image("https://images.unsplash.com/photo-1600180758890-6b94519f735d", width=200)
+    st.markdown("**Name:** Gentle Hydration Cleanser")
+    st.markdown("**Price:** $18.99")
+    st.markdown(f"**Skin Match:** Great for {skin_type} skin with concerns: {', '.join(skin_concerns)}")
+    st.markdown("**Top Review:** "Left my skin feeling clean but not dry!"")
+
+    # Feedback section
+    st.markdown("---")
+    st.subheader("Was this recommendation helpful?")
+    col1, col2 = st.columns([1, 4])
+
+    with col1:
+        helpful = st.radio("", ["Yes", "No"])
+
+    with col2:
+        comment = st.text_input("Any suggestions or feedback?")
+
+    if helpful or comment:
+        feedback = {
+            "datetime": str(datetime.now()),
+            "visit_count": st.session_state.visit_count,
+            "time_on_page": elapsed_time,
+            "skin_type": skin_type,
+            "concerns": skin_concerns,
+            "was_helpful": helpful,
+            "comment": comment
+        }
+        st.json(feedback)
+        st.success("Thank you for your feedback!")
