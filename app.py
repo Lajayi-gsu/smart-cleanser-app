@@ -19,13 +19,6 @@ import streamlit as st
 embedding = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 faiss_index = FAISS.load_local("cleanser_faiss_index", embeddings=embedding)
 
-# Create RetrievalQA chain
-qa = RetrievalQA.from_chain_type(
-    llm=OpenAI(temperature=0),
-    chain_type="stuff",
-    retriever=faiss_index.as_retriever()
-)
-
 # --- SHOPIFY FLOW SIMULATION ---
 
 # Track visit count
